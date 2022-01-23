@@ -13,6 +13,9 @@ Also, please __*DO NOT*__ PM the original author for any kind of support.
 - Change bandwidth counting from tag-based to email-based.
 - Lower cron job time intervals to have a more precise bandwidth monitoring.
 
+# Usage
+Please refer to the [Docker Hub Page](https://hub.docker.com/r/net2cn/x-ui_single_port_mod) for more information about how to use my modded Docker image. It also contains a tiny migration guide if you want to migrate to the modded version.
+
 ### Please be awared that this project is licensed under GPLv3 License. I have my rights to make such a mod, and so do you.
 
 ---
