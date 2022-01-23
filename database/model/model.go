@@ -37,7 +37,7 @@ type Inbound struct {
 	Listen         string   `json:"listen" form:"listen"`
 	Port           int      `json:"port" form:"port"`
 	Protocol       Protocol `json:"protocol" form:"protocol"`
-	Settings       string   `json:"settings" form:"settings"`
+	Settings       string   `json:"settings" form:"settings" gorm:"unique"`
 	StreamSettings string   `json:"streamSettings" form:"streamSettings"`
 	Tag            string   `json:"tag" form:"tag"`
 	Sniffing       string   `json:"sniffing" form:"sniffing"`
