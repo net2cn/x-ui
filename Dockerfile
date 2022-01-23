@@ -8,7 +8,8 @@ FROM debian:11-slim
 RUN apt-get update && apt-get install -y --no-install-recommends -y ca-certificates \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 WORKDIR /root
-COPY --from=builder  /root/main /root/x-ui
+COPY --from=builder /root/main /root/x-ui
 COPY bin/. /root/bin/.
+RUN chmod +x /root/bin/xray-*
 VOLUME [ "/etc/x-ui" ]
 CMD [ "./x-ui" ]
