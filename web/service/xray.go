@@ -72,7 +72,45 @@ func (s *XrayService) GetXrayConfig() (*xray.Config, error) {
 			continue
 		}
 		inboundConfig := inbound.GenXrayInboundConfig()
-		xrayConfig.InboundConfigs = append(xrayConfig.InboundConfigs, *inboundConfig)
+
+		// Crazy little hack for multi-user sharing same port with same protocol.
+		configExisted := false
+		for idx, _ := range xrayConfig.InboundConfigs {
+			if xrayConfig.InboundConfigs[idx].Port == inboundConfig.Port {
+				var existingInboundUnmarshalled map[string]interface{}
+				err = json.Unmarshal(xrayConfig.InboundConfigs[idx].Settings, &existingInboundUnmarshalled)
+				if err != nil {
+					return nil, err
+				}
+
+				var newInboundUnmarshalled map[string]interface{}
+				err = json.Unmarshal(inboundConfig.Settings, &newInboundUnmarshalled)
+				if err != nil {
+					return nil, err
+				}
+
+				var existingClients []interface{} = existingInboundUnmarshalled["clients"].([]interface{})
+				var newClients []interface{} = newInboundUnmarshalled["clients"].([]interface{})
+				
+				for _, newClient := range newClients {
+					existingClients = append(existingClients, newClient)
+				}
+
+				existingInboundUnmarshalled["clients"] = existingClients
+				var existingInboundMarshalled []byte
+				existingInboundMarshalled, err = json.Marshal(existingInboundUnmarshalled)
+				if err != nil {
+					return nil, err
+				}
+				xrayConfig.InboundConfigs[idx].Settings = existingInboundMarshalled
+
+				configExisted = true
+			}
+		}
+		
+		if !configExisted {
+			xrayConfig.InboundConfigs = append(xrayConfig.InboundConfigs, *inboundConfig)
+		}
 	}
 	return xrayConfig, nil
 }

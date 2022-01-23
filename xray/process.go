@@ -20,7 +20,7 @@ import (
 	"x-ui/util/common"
 )
 
-var trafficRegex = regexp.MustCompile("(inbound|outbound)>>>([^>]+)>>>traffic>>>(downlink|uplink)")
+var trafficRegex = regexp.MustCompile("(inbound|outbound|user)>>>([^>]+)>>>traffic>>>(downlink|uplink)")
 
 func GetBinaryName() string {
 	return fmt.Sprintf("xray-%s-%s", runtime.GOOS, runtime.GOARCH)
@@ -251,10 +251,11 @@ func (p *process) GetTraffic(reset bool) ([]*Traffic, error) {
 	tagTrafficMap := map[string]*Traffic{}
 	traffics := make([]*Traffic, 0)
 	for _, stat := range resp.GetStat() {
-		matchs := trafficRegex.FindStringSubmatch(stat.Name)
-		isInbound := matchs[1] == "inbound"
-		tag := matchs[2]
-		isDown := matchs[3] == "downlink"
+		matches := trafficRegex.FindStringSubmatch(stat.Name)
+		isInbound := matches[1] == "inbound"
+		isUser := matches[1] == "user"
+		tag := matches[2]
+		isDown := matches[3] == "downlink"
 		if tag == "api" {
 			continue
 		}
@@ -262,6 +263,7 @@ func (p *process) GetTraffic(reset bool) ([]*Traffic, error) {
 		if !ok {
 			traffic = &Traffic{
 				IsInbound: isInbound,
+				IsUser:    isUser,
 				Tag:       tag,
 			}
 			tagTrafficMap[tag] = traffic

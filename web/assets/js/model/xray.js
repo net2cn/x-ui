@@ -697,6 +697,18 @@ class Inbound extends XrayCommonClass {
         }
     }
 
+    // VMess & VLess
+    get email() {
+        switch (this.protocol) {
+            case Protocols.VMESS:
+                return this.settings.vmesses[0].email;
+            case Protocols.VLESS:
+                return this.settings.vlesses[0].email;
+            default:
+                return "";
+        }
+    }
+
     // VLess & Trojan
     get flow() {
         switch (this.protocol) {
@@ -934,6 +946,7 @@ class Inbound extends XrayCommonClass {
             port: this.port,
             id: this.settings.vmesses[0].id,
             aid: this.settings.vmesses[0].alterId,
+            email: this.settings.vmesses[0].email,
             net: network,
             type: type,
             host: host,
@@ -1155,16 +1168,18 @@ Inbound.VmessSettings = class extends Inbound.Settings {
     }
 };
 Inbound.VmessSettings.Vmess = class extends XrayCommonClass {
-    constructor(id=RandomUtil.randomUUID(), alterId=0) {
+    constructor(id=RandomUtil.randomUUID(), alterId=0, email=id) {
         super();
         this.id = id;
         this.alterId = alterId;
+        this.email = email;
     }
 
     static fromJson(json={}) {
         return new Inbound.VmessSettings.Vmess(
             json.id,
             json.alterId,
+            json.email,
         );
     }
 };
@@ -1207,16 +1222,18 @@ Inbound.VLESSSettings = class extends Inbound.Settings {
 };
 Inbound.VLESSSettings.VLESS = class extends XrayCommonClass {
 
-    constructor(id=RandomUtil.randomUUID(), flow=FLOW_CONTROL.DIRECT) {
+    constructor(id=RandomUtil.randomUUID(), flow=FLOW_CONTROL.DIRECT, email=id) {
         super();
         this.id = id;
         this.flow = flow;
+        this.email = email;
     }
 
     static fromJson(json={}) {
         return new Inbound.VLESSSettings.VLESS(
             json.id,
             json.flow,
+            json.email,
         );
     }
 };

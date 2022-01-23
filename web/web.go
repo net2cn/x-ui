@@ -289,11 +289,11 @@ func (s *Server) startTask() {
 	go func() {
 		time.Sleep(time.Second * 5)
 		// 每 10 秒统计一次流量，首次启动延迟 5 秒，与重启 xray 的时间错开
-		s.cron.AddJob("@every 10s", job.NewXrayTrafficJob())
+		s.cron.AddJob("@every 5s", job.NewXrayTrafficJob())
 	}()
 
 	// 每 30 秒检查一次 inbound 流量超出和到期的情况
-	s.cron.AddJob("@every 30s", job.NewCheckInboundJob())
+	s.cron.AddJob("@every 10s", job.NewCheckInboundJob())
 }
 
 func (s *Server) Start() (err error) {

@@ -1,3 +1,26 @@
+# x-ui_single_port_mod
+A dirty mod that adds email-based multi-user single-port support to the original project. (多用户单端口)
+
+# Description
+I made this mod in a quickie-triky way to add the following features I needed. There are probably tons of bugs to fix in the future. Use at your own risk. I may or may not keep maintaining this mod in the near future.
+
+Also, please __*DO NOT*__ PM the original author for any kind of support.
+
+*Hint:* You can use [DB Browser for SQLite](https://sqlitebrowser.org/) to change default web root path in the database(located in /etc/x-ui/x-ui.db).
+
+# Features
+- Add multiple users sharing same port under same protocol and stream settings.
+- Change bandwidth counting from tag-based to email-based.
+- Lower cron job time intervals to have a more precise bandwidth monitoring.
+
+### Please be awared that this project is licensed under GPLv3 License. I have my rights to make such a mod, and so do you.
+
+---
+Modded by net2cn, 2022.
+
+## Below is the original README.
+---
+
 # x-ui
 支持多协议多用户的 xray 面板
 

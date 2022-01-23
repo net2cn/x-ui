@@ -33,27 +33,45 @@ func (s *InboundService) GetAllInbounds() ([]*model.Inbound, error) {
 	return inbounds, nil
 }
 
-func (s *InboundService) checkPortExist(port int, ignoreId int) (bool, error) {
+func (s *InboundService) checkPortExist(inbound *model.Inbound, ignoreId int) (bool, error) {
 	db := database.GetDB()
-	db = db.Model(model.Inbound{}).Where("port = ?", port)
+	db = db.Model(model.Inbound{}).Where("port = ?", inbound.Port)
 	if ignoreId > 0 {
 		db = db.Where("id != ?", ignoreId)
 	}
-	var count int64
-	err := db.Count(&count).Error
+	var inbounds []*model.Inbound
+	err := db.Model(model.Inbound{}).Find(&inbounds).Error
 	if err != nil {
 		return false, err
 	}
+
+	// Force user to use same protocol and stream settings when creating new config when using same port as existing config.
+	// And we do forbid user add config with duplicated uuid and email.
+	var count int
+	for _, existingInbound := range inbounds {
+		if existingInbound.Listen != inbound.Listen ||
+		 existingInbound.Protocol != inbound.Protocol ||
+		   existingInbound.StreamSettings != inbound.StreamSettings ||
+			  existingInbound.Sniffing != inbound.Sniffing {
+				count += 1
+			  }
+		
+		// TODO: Check if uuid or email is duplicated
+		if existingInbound.Settings == inbound.Settings {
+			count += 1
+		}
+	}
+
 	return count > 0, nil
 }
 
 func (s *InboundService) AddInbound(inbound *model.Inbound) error {
-	exist, err := s.checkPortExist(inbound.Port, 0)
+	exist, err := s.checkPortExist(inbound, 0)
 	if err != nil {
 		return err
 	}
 	if exist {
-		return common.NewError("端口已存在:", inbound.Port)
+		return common.NewError("端口已存在，使用相同端口时请确保该端口所使用的协议一致，且确保使用的id与邮箱都不重复:", inbound.Port)
 	}
 	db := database.GetDB()
 	return db.Save(inbound).Error
@@ -61,12 +79,12 @@ func (s *InboundService) AddInbound(inbound *model.Inbound) error {
 
 func (s *InboundService) AddInbounds(inbounds []*model.Inbound) error {
 	for _, inbound := range inbounds {
-		exist, err := s.checkPortExist(inbound.Port, 0)
+		exist, err := s.checkPortExist(inbound, 0)
 		if err != nil {
 			return err
 		}
 		if exist {
-			return common.NewError("端口已存在:", inbound.Port)
+			return common.NewError("端口已存在，使用相同端口时请确保该端口所使用的协议一致，且确保使用的id与邮箱都不重复:", inbound.Port)
 		}
 	}
 
@@ -107,12 +125,12 @@ func (s *InboundService) GetInbound(id int) (*model.Inbound, error) {
 }
 
 func (s *InboundService) UpdateInbound(inbound *model.Inbound) error {
-	exist, err := s.checkPortExist(inbound.Port, inbound.Id)
+	exist, err := s.checkPortExist(inbound, inbound.Id)
 	if err != nil {
 		return err
 	}
 	if exist {
-		return common.NewError("端口已存在:", inbound.Port)
+		return common.NewError("端口已存在，使用相同端口时请确保该端口所使用的协议一致，且确保使用的id与邮箱都不重复:", inbound.Port)
 	}
 
 	oldInbound, err := s.GetInbound(inbound.Id)
@@ -152,8 +170,8 @@ func (s *InboundService) AddTraffic(traffics []*xray.Traffic) (err error) {
 		}
 	}()
 	for _, traffic := range traffics {
-		if traffic.IsInbound {
-			err = tx.Where("tag = ?", traffic.Tag).
+		if traffic.IsUser {
+			err = tx.Where("settings LIKE ?", "%\"email\": \"" + traffic.Tag + "\"\n%").
 				UpdateColumn("up", gorm.Expr("up + ?", traffic.Up)).
 				UpdateColumn("down", gorm.Expr("down + ?", traffic.Down)).
 				Error
