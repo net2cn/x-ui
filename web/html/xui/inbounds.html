@@ -316,8 +316,9 @@
                     onOk: () => this.submit('/xui/inbound/del/' + dbInbound.id),
                 });
             },
-            showQrcode(dbInbound) {
-                const link = dbInbound.genLink();
+            async showQrcode(dbInbound) {
+                const link = await dbInbound.genLink();
+                console.log(link)
                 qrModal.show('二维码', link);
             },
             showInfo(dbInbound) {

@@ -2,11 +2,12 @@ package controller
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"time"
 	"x-ui/web/entity"
 	"x-ui/web/service"
 	"x-ui/web/session"
+
+	"github.com/gin-gonic/gin"
 )
 
 type updateUserForm struct {
@@ -30,7 +31,6 @@ func NewSettingController(g *gin.RouterGroup) *SettingController {
 
 func (a *SettingController) initRouter(g *gin.RouterGroup) {
 	g = g.Group("/setting")
-
 	g.POST("/all", a.getAllSetting)
 	g.POST("/update", a.updateSetting)
 	g.POST("/updateUser", a.updateUser)

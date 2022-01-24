@@ -67,6 +67,7 @@
                             </a-form>
                         </a-tab-pane>
                         <a-tab-pane key="3" tab="xray 相关设置">
+                            <setting-list-item type="text" title="导出链接使用的服务器地址" desc="生成二维码或导出协议链接时使用的服务器地址，留空则使用浏览器网页地址" v-model="allSetting.exportConfigServerAddress"></setting-list-item>
                             <a-list item-layout="horizontal" style="background: white">
                                 <setting-list-item type="textarea" title="xray 配置模版" desc="以该模版为基础生成最终的 xray 配置文件，重启面板生效" v-model="allSetting.xrayTemplateConfig"></setting-list-item>
                             </a-list>

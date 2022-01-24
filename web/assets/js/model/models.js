@@ -149,9 +149,17 @@ class DBInbound {
         }
     }
 
-    genLink() {
+    async genLink() {
+        let address=this.address
+
         const inbound = this.toInbound();
-        return inbound.genLink(this.address, this.remark);
+        const msg = await HttpUtil.post("/xui/setting/all");
+
+        if (msg.success && msg.obj["exportConfigServerAddress"] !== ""){
+            address = msg.obj["exportConfigServerAddress"]
+        }
+        
+        return inbound.genLink(address, this.remark);
     }
 }
 
@@ -165,6 +173,7 @@ class AllSetting {
         this.webBasePath = "/";
 
         this.xrayTemplateConfig = "";
+        this.exportConfigServerAddress = "";
 
         this.timeLocation = "Asia/Shanghai";
 

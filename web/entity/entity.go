@@ -33,7 +33,8 @@ type AllSetting struct {
 	WebKeyFile  string `json:"webKeyFile" form:"webKeyFile"`
 	WebBasePath string `json:"webBasePath" form:"webBasePath"`
 
-	XrayTemplateConfig string `json:"xrayTemplateConfig" form:"xrayTemplateConfig"`
+	XrayTemplateConfig        string `json:"xrayTemplateConfig" form:"xrayTemplateConfig"`
+	ExportConfigServerAddress string `json:"exportConfigServerAddress" form:"exportConfigServerAddress"`
 
 	TimeLocation string `json:"timeLocation" form:"timeLocation"`
 }
