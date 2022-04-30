@@ -5,12 +5,12 @@
                 sniffing
                 <a-tooltip>
                     <template slot="title">
-                        没有特殊需求保持默认即可
+                        disabled by default, don't turn on
                     </template>
                     <a-icon type="question-circle" theme="filled"></a-icon>
                 </a-tooltip>
             </span>
-    <a-switch v-model="inbound.sniffing.enabled"></a-switch>
+    <a-switch v-model="inbound.sniffing"></a-switch>
   </a-form-item>
 </a-form>
 {{end}}
